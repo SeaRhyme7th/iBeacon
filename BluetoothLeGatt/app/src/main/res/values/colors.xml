@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="welcome_bg">#77a7fb</color>
+    <color name="about_bg">#e57369</color>
+    <color name="more">#fbcb43</color>
+    <color name="more_bg">#35b67b</color>
+    <color name="locate_bg">#fbcb43</color>
+    <color name="locate_bg_head">#ffffff</color>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Find me</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="no_data">No data</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="title_devices">IBeacon Detail</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+
+    <!-- Menu items -->
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+
+    <string name="locatebutton">locate Button</string>
+    <string name="morebutton">more Button</string>
+    <string name="aboutbutton">about Button</string>
+    <string name="uploadbutton">upload Button</string>
+    <string name="interiorlayout">interior Layout</string>
+    <string name="help_locate">help locate</string>
+    <string name="your_position">your position</string>
+    <string name="helpbutton">help button</string>
+    <string name="findfriendsbutton">find friends button</string>
+
+    <string name="your_name">your name</string>
+    <string name="friend_name">friend name</string>
+
+</resources>
