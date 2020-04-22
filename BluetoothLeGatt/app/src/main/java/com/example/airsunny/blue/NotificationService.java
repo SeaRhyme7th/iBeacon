@@ -1,4 +1,4 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 /**
  * Created by jerry123 on 2016/11/2.
@@ -9,7 +9,6 @@ import android.app.NotificationManager;
 import android.app.Notification;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 public class NotificationService extends Service {
 
@@ -38,6 +37,7 @@ public class NotificationService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    @Override
     public void onDestroy() {
         super.onDestroy();
         notificationManager.cancelAll();

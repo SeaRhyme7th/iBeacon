@@ -1,4 +1,4 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,8 +12,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.view.View;
-import android.util.Log;
-import android.view.ViewDebug;
 import android.view.WindowManager;
 
 import java.math.BigDecimal;
@@ -26,10 +24,10 @@ public class Draw extends View {
 
     private Canvas canvas = new Canvas();
     private Paint paint = new Paint();
-    private float me_x;
-    private float me_y;
-    private float friend_x;
-    private float friend_y;
+    private float mex;
+    private float mey;
+    private float friendX;
+    private float friendY;
     private float[] dis = new float[3];
     //两个ibeacon间的距离：单位：米
     private float ibeaconDistance = 6;
@@ -37,36 +35,36 @@ public class Draw extends View {
     private String flagStr = "me";
 
     public float getMyX() {
-        return me_x;
+        return mex;
     }
 
     public float getMyY() {
-        return me_y;
+        return mey;
     }
 
     //x,y以毫米为单位
     public void setMyX(float x) {
-        this.me_x = x;
+        this.mex = x;
     }
 
     public void setMyY(float y) {
-        this.me_y = y;
+        this.mey = y;
     }
 
     public float getFriendX() {
-        return friend_x;
+        return friendX;
     }
 
     public float getFriendY() {
-        return friend_y;
+        return friendY;
     }
 
     public void setFriendX(float x) {
-        this.friend_x = x;
+        this.friendX = x;
     }
 
     public void setFriendY(float y) {
-        this.friend_y = y;
+        this.friendY = y;
     }
 
     public void setFlagStr(String str) {
@@ -95,10 +93,10 @@ public class Draw extends View {
         this.canvas = canvas;
         switch (flagStr) {
             case "me":
-                DrawMyPic();
+                drawMyPic();
                 break;
             case "friend":
-                DrawFriendPic();
+                drawFriendPic();
                 break;
             default:
                 break;
@@ -112,12 +110,12 @@ public class Draw extends View {
         //设置空心STROKE,实心FILL
         paint.setStyle(Paint.Style.FILL);
         //是否去锯齿
-        SetAntiAlias(true);
+        setAntiAlias(true);
         //画iBeacon位置点
         Resources r = this.getContext().getResources();
-        Bitmap bmp_ibeacon = BitmapFactory.decodeResource(r, R.drawable.ibeacon_device);
-        DrawBitmap(bmp_ibeacon, width / 3, 20);
-        DrawBitmap(bmp_ibeacon, width * 2 / 3, 20);
+        Bitmap bmIBeacon = BitmapFactory.decodeResource(r, R.drawable.ibeacon_device);
+        drawBitmap(bmIBeacon, width / 3, 20);
+        drawBitmap(bmIBeacon, width * 2 / 3, 20);
         return r;
     }
 
@@ -133,11 +131,11 @@ public class Draw extends View {
         if (judgeTriangle()) {
             drawPos(r, dis1, dis2, str);
         } else {
-            Double meter_1 = floatToDouble(x);
-            Double meter_2 = floatToDouble(y);
-            Double ibeacon_meter = floatToDouble(ibeaconDistance);
+            Double meterX = floatToDouble(x);
+            Double meterY = floatToDouble(y);
+            Double iBeaconMeter = floatToDouble(ibeaconDistance);
             Two two = new Two();
-            ArrayList<Double> resultDistance = two.Change(meter_1 / 1000, meter_2 / 1000, ibeacon_meter);
+            ArrayList<Double> resultDistance = two.change(meterX / 1000, meterY / 1000, iBeaconMeter);
             dis1 = (float) (resultDistance.get(0) * getScale());
             dis2 = (float) (resultDistance.get(1) * getScale());
             //从小到大三边长排序
@@ -152,33 +150,33 @@ public class Draw extends View {
     }
 
     private void drawPos(Resources r, float dis1, float dis2, String str) {
-        float PosY = (float) (getPositionY(dis1, dis2));
-        float PosX = (float) (getPositionX(dis1, dis2, PosY));
+        float posY = (float) (getPositionY(dis1, dis2));
+        float posX = (float) (getPositionX(dis1, dis2, posY));
         //画图片
-        Bitmap bmp_me;
-        if (str.equals("me")) {
-            bmp_me = BitmapFactory.decodeResource(r, R.drawable.your_position);
+        Bitmap bmMe;
+        if ("me".equals(str)) {
+            bmMe = BitmapFactory.decodeResource(r, R.drawable.your_position);
         } else {
-            bmp_me = BitmapFactory.decodeResource(r, R.drawable.friend_position);
+            bmMe = BitmapFactory.decodeResource(r, R.drawable.friend_position);
         }
-        DrawBitmap(bmp_me, PosX, PosY);
+        drawBitmap(bmMe, posX, posY);
     }
 
     //画包含friend的示意图
-    private void DrawFriendPic() {
+    private void drawFriendPic() {
         paint.setStyle(Paint.Style.STROKE);
-        DrawRect(0, 0, (float) getWindowWidth() - 25, (float) (getWindowHight() * 2 / 5 - 145));
+        drawRect(0, 0, (float) getWindowWidth() - 25, (float) (getWindowHight() * 2 / 5 - 145));
         Resources r = drawIBeacon();
-        drawMyPosition(r, me_x, me_y, "me");
-        drawMyPosition(r, friend_x, friend_y, "friend");
+        drawMyPosition(r, mex, mey, "me");
+        drawMyPosition(r, friendX, friendY, "friend");
     }
 
     //画无friend的示意图
-    private void DrawMyPic() {
+    private void drawMyPic() {
         paint.setStyle(Paint.Style.STROKE);
-        DrawRect(0, 0, (float) getWindowWidth() - 25, (float) (getWindowHight() * 2 / 5 - 145));
+        drawRect(0, 0, (float) getWindowWidth() - 25, (float) (getWindowHight() * 2 / 5 - 145));
         Resources r = drawIBeacon();
-        drawMyPosition(r, me_x, me_y, "me");
+        drawMyPosition(r, mex, mey, "me");
     }
 
     /*获取横坐标
@@ -215,10 +213,7 @@ public class Draw extends View {
 
     //判断是否构成三角形
     private boolean judgeTriangle() {
-        if (dis[0] + dis[1] >= dis[2]) {
-            return true;
-        }
-        return false;
+        return dis[0] + dis[1] >= dis[2];
     }
 
     //距离进行排序
@@ -246,23 +241,20 @@ public class Draw extends View {
     private double getWindowWidth() {
         WindowManager wm = (WindowManager) getContext()
                 .getSystemService(Context.WINDOW_SERVICE);
-        double width = wm.getDefaultDisplay().getWidth();
-        return width;
+        return (double) wm.getDefaultDisplay().getWidth();
     }
 
     private double getWindowHight() {
         WindowManager wm = (WindowManager) getContext()
                 .getSystemService(Context.WINDOW_SERVICE);
-        double height = wm.getDefaultDisplay().getHeight();
-        return height;
+        return (double) wm.getDefaultDisplay().getHeight();
     }
 
     //缩小图片
     private static Bitmap small(Bitmap bitmap) {
         Matrix matrix = new Matrix();
         matrix.postScale(0.1f, 0.1f); //长和宽放大缩小的比例
-        Bitmap resizeBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        return resizeBmp;
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
     public void clear() {
@@ -273,7 +265,7 @@ public class Draw extends View {
     }
 
     //1:红，2:蓝,3:绿,4:黄,5:黑,6:白,7:灰
-    public void SetColor(int color) {
+    public void setColor(int color) {
         int _color = 0;
         switch (color) {
             case 1:
@@ -304,45 +296,45 @@ public class Draw extends View {
     }
 
     //写字
-    public void DrawText(String string, float x, float y) {
+    public void drawText(String string, float x, float y) {
         this.canvas.drawText(string, x, y, this.paint);
     }
 
     //画圆
-    public void DrawCircle(float x, float y, float r) {
+    public void drawCircle(float x, float y, float r) {
         this.canvas.drawCircle(x, y, r, this.paint);
     }
 
     //设置画笔的锯齿效果。 true是去除
-    public void SetAntiAlias(boolean b) {
+    public void setAntiAlias(boolean b) {
         this.paint.setAntiAlias(b);
     }
 
     //画长方形
-    public void DrawRect(float FromX, float FromY, float ToX, float ToY) {
+    public void drawRect(float FromX, float FromY, float ToX, float ToY) {
         paint.setStyle(Paint.Style.STROKE);
         this.canvas.drawRect(FromX, FromY, ToX, ToY, this.paint);
     }
 
     //画线
-    public void DrawLine(float FromX, float FromY, float ToX, float ToY) {
+    public void drawLine(float FromX, float FromY, float ToX, float ToY) {
         this.canvas.drawLine(FromX, FromY, ToX, ToY, this.paint);
     }
 
     //画圆角矩形
-    public void DrawRoundRect(float RectFromX, float RectFromY, float RectToX, float RectToY, float xRadius, float yRadius) {
+    public void drawRoundRect(float RectFromX, float RectFromY, float RectToX, float RectToY, float xRadius, float yRadius) {
         RectF oval = new RectF(RectFromX, RectFromY, RectToX, RectToY);
         this.canvas.drawRoundRect(oval, xRadius, yRadius, this.paint);
     }
 
     //画点
-    public void DrawPoint(float x, float y) {
+    public void drawPoint(float x, float y) {
         this.paint.setStyle(Paint.Style.FILL);
         this.canvas.drawPoint(x, y, this.paint);
     }
 
     //画图片，即贴图
-    public void DrawBitmap(Bitmap bitmap, float x, float y) {
+    public void drawBitmap(Bitmap bitmap, float x, float y) {
         this.canvas.drawBitmap(bitmap, x, y, this.paint);
     }
 }

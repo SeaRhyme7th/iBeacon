@@ -1,4 +1,4 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -8,9 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,14 +15,11 @@ import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
@@ -39,7 +33,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.example.air_sunny.blue.iBeaconClass.fromScanData;
+import static com.example.airsunny.blue.iBeaconClass.fromScanData;
 
 public class LocateActivity extends SwipeBackActivity {
 
@@ -90,9 +84,9 @@ public class LocateActivity extends SwipeBackActivity {
         setContentView(R.layout.activity_locate);
         lActivity = this;
         //上传按钮
-        adduploadButton();
+        addUploadButton();
         //寻找朋友按钮（查看朋友的位置）
-        addfindFriendsButton();
+        addFindFriendsButton();
         //增加点击事件监听，点击弹出图例说明
         listenImage();
         //右划返回
@@ -195,7 +189,7 @@ public class LocateActivity extends SwipeBackActivity {
     private void getBlueTooth() {
         //检查是否支持ble，不支持就退出app
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            toast.makeText(LocateActivity.this,"BLE is not supported.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(LocateActivity.this,"BLE is not supported.",Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -209,7 +203,7 @@ public class LocateActivity extends SwipeBackActivity {
         // Checks if Bluetooth is supported on the device.
         //检查是否支持蓝牙
         if (mBluetoothAdapter == null) {
-            toast.makeText(LocateActivity.this,"Bluetooth not supported.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(LocateActivity.this,"Bluetooth not supported.",Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -274,7 +268,7 @@ public class LocateActivity extends SwipeBackActivity {
         }
     }
 
-    private void adduploadButton() {
+    private void addUploadButton() {
         new uploadThread().start();
         uploadButton = (ImageButton) findViewById(R.id.uploadButton);
         uploadButton.setOnClickListener(new View.OnClickListener() {
@@ -367,7 +361,7 @@ public class LocateActivity extends SwipeBackActivity {
         }
     }
 
-    private void addfindFriendsButton() {
+    private void addFindFriendsButton() {
         new findFriendsThread().start();
         findFriendsButton = (ImageButton) findViewById(R.id.findFriendsButton);
         findFriendsButton.setOnClickListener(new View.OnClickListener() {
@@ -495,11 +489,11 @@ public class LocateActivity extends SwipeBackActivity {
                             iBeaconClass.iBeacon ibeacon = fromScanData(device, rssi, scanRecord);
                             if (ibeacon != null) {
                                 LeDeviceListAdapter leDeviceListAdapter = new LeDeviceListAdapter(LocateActivity.this);
-                                LeDeviceListAdapter.Ble_BluetoothDevice ble_bluetoothDevice = leDeviceListAdapter.new Ble_BluetoothDevice(
+                                LeDeviceListAdapter.Ble_BluetoothDevice bleBluetoothDevice = leDeviceListAdapter.new Ble_BluetoothDevice(
                                         device, rssi, ibeacon.txPower, iBeaconClass.calculateAccuracy(rssi), ibeacon.major, ibeacon.minor, ibeacon.proximityUuid
                                 );
                                 // return 的值
-                                int chufa = mLeDeviceListAdapter.addDevice(ble_bluetoothDevice);
+                                int chufa = mLeDeviceListAdapter.addDevice(bleBluetoothDevice);
                                 mLeDeviceListAdapter.notifyDataSetChanged();
                                 //根据chufa的值发送信息
                                 if (flag && chufa > (-75)) {

@@ -1,9 +1,5 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -18,9 +14,6 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import android.util.Log;
-import android.widget.Toast;
 
 public class LeDeviceListAdapter extends BaseAdapter {
 
@@ -62,7 +55,7 @@ public class LeDeviceListAdapter extends BaseAdapter {
     private boolean flagMeasure;
     boolean flagWrite;
     Intent intent_le;
-    private int[] devicename;
+    private int[] deviceName;
     private final static int IBEACON_DATACOUNT = 200;
 
     public LeDeviceListAdapter(Activity c) {
@@ -75,9 +68,9 @@ public class LeDeviceListAdapter extends BaseAdapter {
         sMeasure[0] = "";
         sMeasure[1] = "";
         flagMeasure = false;
-        devicename = new int[2];
-        devicename[0] = 0;
-        devicename[1] = 0;
+        deviceName = new int[2];
+        deviceName[0] = 0;
+        deviceName[1] = 0;
     }
 
 //    //获取手机某目录下所有文件的路径
@@ -141,21 +134,21 @@ public class LeDeviceListAdapter extends BaseAdapter {
                 mLeDevices.get(i).minor = device.minor;
                 mLeDevices.get(i).proximityUuid = device.proximityUuid;
 //                //测数据写入文件
-//                if (devicename[0] < IBEACON_DATACOUNT || devicename[1] < IBEACON_DATACOUNT) {
-//                    if (devicename[0] < IBEACON_DATACOUNT && mLeDevices.get(i).bluetoothDevice.getName().equals("E-Beacon_0EC0B6")) {
-//                        Log.e("measure", "measure:E-Beacon_0EC0B6:" + (devicename[0] + 1));
-//                        devicename[0]++;
+//                if (deviceName[0] < IBEACON_DATACOUNT || deviceName[1] < IBEACON_DATACOUNT) {
+//                    if (deviceName[0] < IBEACON_DATACOUNT && mLeDevices.get(i).bluetoothDevice.getName().equals("E-Beacon_0EC0B6")) {
+//                        Log.e("measure", "measure:E-Beacon_0EC0B6:" + (deviceName[0] + 1));
+//                        deviceName[0]++;
 //                        sMeasure[0] += " " + mLeDevices.get(i).rssi;
 //                    }
-//                    if (devicename[1] < IBEACON_DATACOUNT && mLeDevices.get(i).bluetoothDevice.getName().equals("E-Beacon_E4C5E0")) {
-//                        Log.e("measure", "measure:E-Beacon_E4C5E0:" + (devicename[1] + 1));
-//                        devicename[1]++;
+//                    if (deviceName[1] < IBEACON_DATACOUNT && mLeDevices.get(i).bluetoothDevice.getName().equals("E-Beacon_E4C5E0")) {
+//                        Log.e("measure", "measure:E-Beacon_E4C5E0:" + (deviceName[1] + 1));
+//                        deviceName[1]++;
 //                        sMeasure[1] += " " + mLeDevices.get(i).rssi;
 //                    }
 //                }
-//                if (flagMeasure == false && devicename[0] == IBEACON_DATACOUNT && devicename[1] == IBEACON_DATACOUNT) {
+//                if (flagMeasure == false && deviceName[0] == IBEACON_DATACOUNT && deviceName[1] == IBEACON_DATACOUNT) {
 //                    flagWrite = writeData(sMeasure[0], sMeasure[1]);
-//                    if ((devicename[1] == IBEACON_DATACOUNT) && (devicename[2] == IBEACON_DATACOUNT)) {
+//                    if ((deviceName[1] == IBEACON_DATACOUNT) && (deviceName[2] == IBEACON_DATACOUNT)) {
 //                        flagMeasure = true;
 //                    }
 //                    if (flagWrite) {
@@ -303,15 +296,16 @@ public class LeDeviceListAdapter extends BaseAdapter {
         Ble_BluetoothDevice device = mLeDevices.get(i);
         if (DeviceScanActivity.dActivity != null) {
             final String deviceName = device.bluetoothDevice.getName();
-            if (deviceName != null && deviceName.length() > 0)
+            if (deviceName != null && deviceName.length() > 0) {
                 viewHolder.deviceName.setText("Device Name:" + deviceName);
-            else
+            } else {
                 viewHolder.deviceName.setText("Device Name:Unknown device");
+            }
             viewHolder.deviceAddress.setText("Bluetooth Address:" + device.bluetoothDevice.getAddress());
             viewHolder.deviceRSSI.setText("rssi:" + String.valueOf(device.rssi));
             viewHolder.deviceTxPower.setText("TxPower:" + String.valueOf(device.txpower));
-            DecimalFormat df_device = new DecimalFormat("0.0");
-            viewHolder.deviceDistance.setText("Distance:" + df_device.format(device.distance) + "m");
+            DecimalFormat df = new DecimalFormat("0.0");
+            viewHolder.deviceDistance.setText("Distance:" + df.format(device.distance) + "m");
             viewHolder.deviceMajor.setText("Major:" + String.valueOf(device.major));
             viewHolder.deviceMinor.setText("Minor:" + String.valueOf(device.minor));
             viewHolder.deviceProximityUuid.setText("Uuid:" + device.proximityUuid);
@@ -319,11 +313,11 @@ public class LeDeviceListAdapter extends BaseAdapter {
             return view;
         } else {
             final String deviceName = device.bluetoothDevice.getName();
-            DecimalFormat df_locate = new DecimalFormat("0.0");
+            DecimalFormat dfLocate = new DecimalFormat("0.0");
             if (deviceName != null && deviceName.length() > 0) {
-                viewHolder.locateDetail.setText("Apart from " + deviceName + " " + df_locate.format(device.distance) + " m");
+                viewHolder.locateDetail.setText("Apart from " + deviceName + " " + dfLocate.format(device.distance) + " m");
             } else {
-                viewHolder.locateDetail.setText("Apart from Unknown device " + df_locate.format(device.distance) + " m");
+                viewHolder.locateDetail.setText("Apart from Unknown device " + dfLocate.format(device.distance) + " m");
             }
             return view;
         }

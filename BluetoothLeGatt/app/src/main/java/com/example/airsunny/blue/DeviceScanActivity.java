@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -25,17 +25,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.air_sunny.blue.iBeaconClass.iBeacon;
+import com.example.airsunny.blue.iBeaconClass.iBeacon;
 
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
-import static com.example.air_sunny.blue.iBeaconClass.fromScanData;
+import static com.example.airsunny.blue.iBeaconClass.fromScanData;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.

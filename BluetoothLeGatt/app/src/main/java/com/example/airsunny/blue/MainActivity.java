@@ -1,4 +1,4 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 /**
  * Created by LeLe on 2016/11/6.
@@ -14,9 +14,6 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import java.util.Locale;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
 

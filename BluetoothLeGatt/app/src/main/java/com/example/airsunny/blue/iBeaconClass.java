@@ -1,4 +1,4 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 /**
  * Created by jerry123 on 2016/10/22.
@@ -8,8 +8,6 @@ import android.bluetooth.BluetoothDevice;
 
 import static java.lang.Math.pow;
 
-import android.util.Log;
-
 /**
  * 在iBbeaconClass类中对其进行数据的解析处理:
  * 详细的参考git仓库：https://github.com/AltBeacon/android-beacon-library
@@ -17,7 +15,7 @@ import android.util.Log;
 
 public class iBeaconClass {
 
-    static public class iBeacon {
+    public static class iBeacon {
         public String name;
         //major：相当于群组号，同一个组里Beacon有相同的Major
         public int major;

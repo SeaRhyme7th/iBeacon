@@ -1,4 +1,4 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 /**
  * Created by jerry123 on 2016/11/19.
@@ -13,7 +13,7 @@ public class Two {
     private Double a = 6.0;
     private ArrayList<Double> res = new ArrayList<Double>();
 
-    public ArrayList<Double> Change(Double b1, Double b2, Double x) {
+    public ArrayList<Double> change(Double b1, Double b2, Double x) {
         setA(x);
         res = change(b1, b2);
         return res;
@@ -59,14 +59,14 @@ public class Two {
         Double m;
         m = max(a, x1, x2);
         //开始处理
-        if (a == m) {
+        if (a.equals(m)) {
             // a 是最大值
             if ((x1 + x2) < a) {
                 x1 = x1 + 0.1;
                 x2 = x2 + 0.1 * ratio;
                 flag = 1;
             }
-        } else if (x1 == m) {
+        } else if (x1.equals(m)) {
             //x1 是最大值
             if ((x2 + a) < x1) {
                 x2 += 0.1 * ratio;

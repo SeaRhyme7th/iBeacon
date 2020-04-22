@@ -1,4 +1,4 @@
-package com.example.air_sunny.blue;
+package com.example.airsunny.blue;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
