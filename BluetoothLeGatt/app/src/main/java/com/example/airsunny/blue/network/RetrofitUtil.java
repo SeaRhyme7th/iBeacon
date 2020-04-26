@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -16,6 +18,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import io.reactivex.Observable;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -31,6 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * @author lzq
  * @date 2020-04-02
  */
+@SuppressWarnings("unchecked")
 public class RetrofitUtil {
     private ApiService mApiService;
 
@@ -128,5 +132,19 @@ public class RetrofitUtil {
         }
     }
 
+    public Observable<String> getFriendPosition(String name, String rename) {
+        Map map = new HashMap(4);
+        map.put("name", name);
+        map.put("rename", rename);
+        return mApiService.getFrindPosition(map);
+    }
+
+    public Observable<String> uploadPosition(String name, String ib1, String ib2) {
+        Map map = new HashMap(8);
+        map.put("name", name);
+        map.put("ib1", ib1);
+        map.put("ib2", ib2);
+        return mApiService.uploadPosition(map);
+    }
 
 }

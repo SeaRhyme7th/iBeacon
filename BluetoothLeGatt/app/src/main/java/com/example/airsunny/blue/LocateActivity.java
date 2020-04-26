@@ -23,6 +23,14 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.util.Log;
 
+import com.example.airsunny.blue.entity.DataEvent;
+import com.example.airsunny.blue.network.EventCode;
+import com.example.airsunny.blue.network.NetworkUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -82,6 +90,7 @@ public class LocateActivity extends SwipeBackActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_locate);
+        EventBus.getDefault().register(this);
         lActivity = this;
         //上传按钮
         addUploadButton();
@@ -214,62 +223,7 @@ public class LocateActivity extends SwipeBackActivity {
     //子线程发消息，通知Handler完成UI更新
     OkHttpClient mOkHttpClient = new OkHttpClient();
 
-    class uploadThread extends Thread {
-        @Override
-        public void run() {
-            //耗时操作，完成之后发送消息给Handler，完成UI更新；
-            Looper.prepare();//1、初始化Looper
-            uploadHandler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    switch (msg.what) {
-                        case UPLOADHANDLE:
-                            deviceDistance = mLeDeviceListAdapter.getDevice();
-                            int dis_1 = 0, dis_2 = 0;
-                            if (deviceDistance.size() > 1) {
-                                //确定两个距离各自对应的设备,arg1对应E-Beacon_0EC0B6,arg2对应E-Beacon_E4C5E0
-                                if (deviceDistance.get(0).bluetoothDevice.getName().equals("E-Beacon_0EC0B6")) {
-                                    dis_1 = (int) (deviceDistance.get(0).distance * 1000);
-                                    dis_2 = (int) (deviceDistance.get(1).distance * 1000);
-                                } else {
-                                    dis_1 = (int) (deviceDistance.get(1).distance * 1000);
-                                    dis_2 = (int) (deviceDistance.get(0).distance * 1000);
-                                }
-                            }
-                            FormBody body = new FormBody.Builder()
-                                    .add("name", msg.obj.toString())
-                                    .add("ib1", String.valueOf(dis_1))
-                                    .add("ib2", String.valueOf(dis_2))
-                                    .build();
-                            Request request = new Request.Builder()
-                                    .url("http://119.29.35.172/Ibeacon/index.php/Ibeacon/Ibeacon/upload.html")
-                                    .post(body)
-                                    .build();
-                            try {
-                                Response response = mOkHttpClient.newCall(request).execute();
-                                if (response.isSuccessful()) {
-                                    Toast.makeText(LocateActivity.this,"上传位置成功",Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(LocateActivity.this,"上传位置失败",Toast.LENGTH_SHORT).show();
-                                    throw new IOException("Unexpected code " + response);
-                                }
-                            } catch (IOException e) {
-                                Toast.makeText(LocateActivity.this,"上传位置失败",Toast.LENGTH_SHORT).show();
-                                e.printStackTrace();
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            };
-            Looper.loop();
-        }
-    }
-
     private void addUploadButton() {
-        new uploadThread().start();
         uploadButton = (ImageButton) findViewById(R.id.uploadButton);
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -290,7 +244,19 @@ public class LocateActivity extends SwipeBackActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String yourName = YourId.getText().toString();
                         if (!"".equals(yourName)) {
-                            uploadHandler.obtainMessage(UPLOADHANDLE, yourName).sendToTarget();
+                            deviceDistance = mLeDeviceListAdapter.getDevice();
+                            int dis_1 = 0, dis_2 = 0;
+                            if (deviceDistance.size() > 1) {
+                                //确定两个距离各自对应的设备,arg1对应E-Beacon_0EC0B6,arg2对应E-Beacon_E4C5E0
+                                if ("E-Beacon_0EC0B6".equals(deviceDistance.get(0).bluetoothDevice.getName())) {
+                                    dis_1 = (int) (deviceDistance.get(0).distance * 1000);
+                                    dis_2 = (int) (deviceDistance.get(1).distance * 1000);
+                                } else {
+                                    dis_1 = (int) (deviceDistance.get(1).distance * 1000);
+                                    dis_2 = (int) (deviceDistance.get(0).distance * 1000);
+                                }
+                            }
+                            NetworkUtil.getInstance().uploadPosition(yourName, String.valueOf(dis_1), String.valueOf(dis_2));
                         }
                     }
                 });
@@ -300,69 +266,7 @@ public class LocateActivity extends SwipeBackActivity {
         });
     }
 
-    class findFriendsThread extends Thread {
-        @Override
-        public void run() {
-            //初始化Looper
-            Looper.prepare();
-            //绑定handler到本子线程
-            findFriendHandler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    switch (msg.what) {
-                        case FINDFRIENDHANDLE:
-                            String[] string = (String[]) msg.obj;
-                            //网络请求获得数据
-                            FormBody body = new FormBody.Builder()
-                                    .add("name", string[0])
-                                    .add("rename", string[1])
-                                    .build();
-                            Request request = new Request.Builder()
-                                    .url("http://119.29.35.172/Ibeacon/index.php/Ibeacon/Ibeacon/feedback.html")
-                                    .post(body)
-                                    .build();
-                            try {
-                                Response response = mOkHttpClient.newCall(request).execute();
-                                if (response.isSuccessful()) {
-                                    String back = response.body().string();
-                                    Log.e("run",back+" "+back.length());
-                                    if(back.equals("friend is not existed")){
-                                        Message msg2 = new Message();
-                                        msg2.obj = back;
-                                        msg2.obj = back.split(" ");
-                                        msg2.what = FINDFRIENDPIC;
-                                        oHandler.sendMessage(msg2);
-                                        Toast.makeText(LocateActivity.this,"无此好友位置数据",Toast.LENGTH_SHORT).show();
-                                    }else{
-                                        //需要数据传递，用下面方法；
-                                        Message msg1 = new Message();
-                                        msg1.obj = back.split("&");
-                                        ;//可以是基本类型，可以是对象，可以是List、map等；
-                                        msg1.what = FINDFRIENDPIC;
-                                        oHandler.sendMessage(msg1);
-                                        Toast.makeText(LocateActivity.this,"获取好友位置成功",Toast.LENGTH_SHORT).show();
-                                    }
-                                } else {
-                                    Toast.makeText(LocateActivity.this,"获取好友位置失败",Toast.LENGTH_SHORT).show();
-                                    throw new IOException("Unexpected code " + response);
-                                }
-                            } catch (IOException e) {
-                                Toast.makeText(LocateActivity.this,"获取好友位置失败",Toast.LENGTH_SHORT).show();
-                                e.printStackTrace();
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            };
-            Looper.loop();
-        }
-    }
-
     private void addFindFriendsButton() {
-        new findFriendsThread().start();
         findFriendsButton = (ImageButton) findViewById(R.id.findFriendsButton);
         findFriendsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -385,6 +289,7 @@ public class LocateActivity extends SwipeBackActivity {
                             String[] str = new String[2];
                             str[0] = yourName;
                             str[1] = friendName;
+                            NetworkUtil.getInstance().getFriendPosition(yourName, friendName);
                             findFriendHandler.obtainMessage(FINDFRIENDHANDLE, str).sendToTarget();
                         }
                     }
@@ -393,6 +298,50 @@ public class LocateActivity extends SwipeBackActivity {
                 builder.create().show();
             }
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(DataEvent event) {
+        switch (event.getEventCode()) {
+            case EventCode.GET_FRIEND_POSITION:
+                if (event.isSuccess()) {
+                    String result = (String) event.getResult();
+                    if("friend is not existed".equals(result)){
+                        strPosition = result.split(" ");
+                        Log.e("obj",strPosition[0]);
+                        if(!("friend".equals(strPosition[0]))){
+                            view.setFlagStr("friend");
+                            updateFriend(strPosition);
+                            friendExistFlag = true;
+                        }else{
+                            friendExistFlag = false;
+                        }
+                        Toast.makeText(LocateActivity.this,"无此好友位置数据",Toast.LENGTH_SHORT).show();
+                    }else{
+                        strPosition = result.split("&");
+                        Log.e("obj",strPosition[0]);
+                        if(!("friend".equals(strPosition[0]))){
+                            view.setFlagStr("friend");
+                            updateFriend(strPosition);
+                            friendExistFlag = true;
+                        }else{
+                            friendExistFlag = false;
+                        }
+                        Toast.makeText(LocateActivity.this,"获取好友位置成功",Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(LocateActivity.this,"获取好友位置失败",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case EventCode.UPLOAD_POSITION:
+                if (event.isSuccess()) {
+                    Toast.makeText(LocateActivity.this,"上传位置成功",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LocateActivity.this,"上传位置失败",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
     }
 
     private void listenImage() {
@@ -442,6 +391,12 @@ public class LocateActivity extends SwipeBackActivity {
     protected void onStop() {
         super.onStop();
         lActivity = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     //扫描ble设备
